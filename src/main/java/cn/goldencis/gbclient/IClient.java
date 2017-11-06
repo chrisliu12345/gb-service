@@ -12,4 +12,6 @@ public interface IClient {
     Response queryDeviceList(String deviceUserName, String deviceIp) throws ParseException, SipException, InvalidArgumentException;
 
     Response queryDeviceStatus(String deviceUserName, String deviceIp) throws ParseException, SipException, InvalidArgumentException;
+
+    Response keepAlive() throws ParseException, SipException, InvalidArgumentException;
 }

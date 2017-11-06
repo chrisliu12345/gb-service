@@ -77,7 +77,7 @@ public class Transport implements SipListener, IClientRequest {
     @Override
     public Response sendRequest(Request request) throws SipException {
         callSeqNumber++;
-        receiveStatus=false;
+        receiveStatus = false;
         sipProvider.sendRequest(request);
         for (int i = 0; i < 100; i++) {
             if (receiveStatus) {
@@ -170,23 +170,27 @@ public class Transport implements SipListener, IClientRequest {
     private void processResponseAuthorization(Response response, URI uriReq, Request requestauth) throws Exception {
 
         WWWAuthenticateHeader wwwAuthenticateHeader = (WWWAuthenticateHeader) response.getHeader(SIPHeaderNames.WWW_AUTHENTICATE);
-        String schema = wwwAuthenticateHeader.getScheme();
-        String nonce = wwwAuthenticateHeader.getNonce();
+        if (wwwAuthenticateHeader != null) {
+            String schema = wwwAuthenticateHeader.getScheme();
+            String nonce = wwwAuthenticateHeader.getNonce();
 
-        AuthorizationHeader authorizationHeader = headerFactory.createAuthorizationHeader(schema);
-        authorizationHeader.setRealm(bean.getRealm());
-        authorizationHeader.setNonce(nonce);
-        authorizationHeader.setAlgorithm("MD5");
-        authorizationHeader.setUsername(bean.getLocalUsername());
+            AuthorizationHeader authorizationHeader = headerFactory.createAuthorizationHeader(schema);
+            authorizationHeader.setRealm(bean.getRealm());
+            authorizationHeader.setNonce(nonce);
+            authorizationHeader.setAlgorithm("MD5");
+            authorizationHeader.setUsername(bean.getLocalUsername());
 
-        authorizationHeader.setURI(uriReq);
+            authorizationHeader.setURI(uriReq);
 
-        digest.initialize(bean.getRealm(), bean.getLocalUsername(), uriReq.toString(), nonce, bean.getPassword(), ((CSeqHeader) response.getHeader(CSeqHeader.NAME)).getMethod(), null, "MD5");
-        String r = digest.generateResponse();
-        authorizationHeader.setResponse(r);
+            digest.initialize(bean.getRealm(), bean.getLocalUsername(), uriReq.toString(), nonce, bean.getPassword(), ((CSeqHeader) response.getHeader(CSeqHeader.NAME)).getMethod(), null, "MD5");
+            String r = digest.generateResponse();
+            authorizationHeader.setResponse(r);
 
-        System.out.println("Proxy Response antes de modificarlo : " + authorizationHeader.getResponse());
-        requestauth.addHeader(authorizationHeader);
+            System.out.println("Proxy Response antes de modificarlo : " + authorizationHeader.getResponse());
+            requestauth.addHeader(authorizationHeader);
+        } else {
+            System.out.println("no auth info created here because  wwwAuthenticateHeader is null .");
+        }
     }
 
     private CallIdHeader createCallIdHeader() throws ParseException {
@@ -326,4 +330,48 @@ public class Transport implements SipListener, IClientRequest {
         processResponseAuthorization(response, fromUri, request);
         return request;
     }
+
+    public Request createNotifyRequest(String queryContent) throws ParseException, InvalidArgumentException, SipException {
+        Request request = createNotifyRequestHeader();
+        byte[] contents = queryContent.getBytes();
+        ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("Application", "MANSCDP+xml");
+        request.setContent(contents, contentTypeHeader);
+        return request;
+    }
+
+    private Request createNotifyRequestHeader() throws ParseException, InvalidArgumentException {
+
+        Address fromNameAddress = addressFactory.createAddress("sip:" + bean.getLocalUsername() + "@" + bean.getRealm());
+        FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
+                bean.getRealm());
+
+        SipURI toAddress = addressFactory.createSipURI(bean.getServerUsername(), bean.getRealm());
+        Address toNameAddress = addressFactory.createAddress(toAddress);
+        ToHeader toHeader = headerFactory.createToHeader(toNameAddress, null);
+
+        SipURI requestURI = addressFactory.createSipURI(bean.getServerUsername(), bean.getServerIp());
+        ArrayList viaHeaders = new ArrayList();
+        ViaHeader viaHeader = headerFactory.createViaHeader(bean.getLocalIp(),
+                bean.getLocalPort(), "udp", "branch1");
+        viaHeaders.add(viaHeader);
+
+        CallIdHeader callIdHeader = createCallIdHeader();
+
+        CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(callSeqNumber,
+                Request.MESSAGE);
+        callSeqNumber++;
+        MaxForwardsHeader maxForwards = headerFactory
+                .createMaxForwardsHeader(70);
+
+
+        Request request = messageFactory.createRequest(requestURI,
+                Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
+                toHeader, viaHeaders, maxForwards);
+
+        ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(3600);
+        request.setExpires(expiresHeader);
+
+        return request;
+    }
+
 }
