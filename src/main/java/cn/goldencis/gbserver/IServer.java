@@ -1,4 +1,4 @@
-package com.git.wuqf.sip.demos.server;
+package cn.goldencis.gbserver;
 
 import org.xml.sax.SAXException;
 
