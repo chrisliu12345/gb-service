@@ -69,15 +69,15 @@ public class Client implements IClient {
     }
 
     @Override
-    public Response keepAlive() throws ParseException, SipException, InvalidArgumentException {
+    public Response keepAlive(String sn) throws ParseException, SipException, InvalidArgumentException {
         String sdpData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
                 "<Notify>\r\n" +
                 "<CmdType>Keepalive</CmdType>\r\n" +
-                "<SN>8659</SN>\r\n" +
+                "<SN>"+sn+"</SN>\r\n" +
                 "<DeviceID>" + initParameter.getLocalUsername() + "</DeviceID>\r\n" +
                 "<Status>OK</Status>\r\n" +
                 "</Notify>";
-        Request request = transport.createNotifyRequest(sdpData);
+        Request request = transport.createRequestWithBody(sdpData);
         return transport.sendRequest(request);
     }
 }

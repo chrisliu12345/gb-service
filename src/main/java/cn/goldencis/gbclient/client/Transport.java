@@ -16,7 +16,9 @@ import javax.sip.message.Response;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.TooManyListenersException;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class Transport implements SipListener, IClientRequest {
 
@@ -42,6 +44,8 @@ public class Transport implements SipListener, IClientRequest {
     private InitParameter bean;
 
     private ResponseEvent responseEvent;
+
+
 
     /**
      * Here we initialize the SIP stack.
@@ -126,6 +130,16 @@ public class Transport implements SipListener, IClientRequest {
             toHeader.setTag("888"); //This is mandatory as per the spec.
             ServerTransaction st = sipProvider.getNewServerTransaction(req);
             st.sendResponse(response);
+            String body = new String((byte[]) (req.getContent()));
+            String Sn = body.split("SN")[1].split(">")[1].split("<")[0];
+
+            if (body.contains("Catalog")) {
+                createCatalogResponseResquest(Sn);
+            } else if (body.contains("DeviceStatus")) {
+                createDeviceStatusResponseResquest(Sn);
+            } else if (body.contains("DeviceControl")) {
+                createDeviceControlResponseResquest(Sn);
+            }
         } catch (Throwable e) {
             e.printStackTrace();
             System.out.println("Can't send OK reply.");
@@ -229,7 +243,6 @@ public class Transport implements SipListener, IClientRequest {
 
         CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(callSeqNumber,
                 Request.MESSAGE);
-        callSeqNumber++;
         MaxForwardsHeader maxForwards = headerFactory
                 .createMaxForwardsHeader(70);
 
@@ -268,7 +281,7 @@ public class Transport implements SipListener, IClientRequest {
 
         CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(callSeqNumber,
                 Request.REGISTER);
-        callSeqNumber++;
+
 
         MaxForwardsHeader maxForwards = headerFactory
                 .createMaxForwardsHeader(70);
@@ -331,7 +344,7 @@ public class Transport implements SipListener, IClientRequest {
         return request;
     }
 
-    public Request createNotifyRequest(String queryContent) throws ParseException, InvalidArgumentException, SipException {
+    public Request createRequestWithBody(String queryContent) throws ParseException, InvalidArgumentException, SipException {
         Request request = createNotifyRequestHeader();
         byte[] contents = queryContent.getBytes();
         ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("Application", "MANSCDP+xml");
@@ -359,7 +372,6 @@ public class Transport implements SipListener, IClientRequest {
 
         CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(callSeqNumber,
                 Request.MESSAGE);
-        callSeqNumber++;
         MaxForwardsHeader maxForwards = headerFactory
                 .createMaxForwardsHeader(70);
 
@@ -374,4 +386,73 @@ public class Transport implements SipListener, IClientRequest {
         return request;
     }
 
+    public Response createCatalogResponseResquest(String sn) throws ParseException, SipException, InvalidArgumentException {
+        String sdpData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                "<Response>\r\n" +
+                "<CmdType>Catalog</CmdType>\r\n" +
+                "<SN>" + sn + "</SN>\r\n" +
+                "<DeviceID>" + bean.getLocalUsername() + "</DeviceID>\r\n" +
+                "<SumNum>1</SumNum>\r\n" +
+                "<DeviceList Num=\"1\">\r\n" +
+                "<Item>\r\n" +
+                "<DeviceID>34020000001320000004</DeviceID>\r\n" +
+                "<Name>Camera 01</Name>\r\n" +
+                "<Manufacturer>Hikvision</Manufacturer>\r\n" +
+                "<Model>IP Camera</Model>\r\n" +
+                "<Owner>Owner</Owner>\r\n" +
+                "<CivilCode>CivilCode</CivilCode>\r\n" +
+                "<Address>Address</Address>\r\n" +
+                "<Parental>0</Parental>\r\n" +
+                "<ParentID>" + bean.getLocalUsername() + "</ParentID>\r\n" +
+                "<SafetyWay>0</SafetyWay>\r\n" +
+                "<RegisterWay>1</RegisterWay>\r\n" +
+                "<Secrecy>0</Secrecy>\r\n" +
+                "<Status>ON</Status>\r\n" +
+                "</Item>\r\n" +
+                "</DeviceList>\r\n" +
+                "</Response>";
+        Request request = createRequestWithBody(sdpData);
+        return sendRequest(request);
+    }
+
+    public Response createDeviceStatusResponseResquest(String sn) throws ParseException, SipException, InvalidArgumentException {
+        String sdpData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                "<Response>\r\n" +
+                "<CmdType>Catalog</CmdType>\r\n" +
+                "<SN>" + sn + "</SN>\r\n" +
+                "<DeviceID>" + bean.getLocalUsername() + "</DeviceID>\r\n" +
+                "<SumNum>1</SumNum>\r\n" +
+                "<DeviceList Num=\"1\">\r\n" +
+                "<Item>\r\n" +
+                "<DeviceID>34020000001320000004</DeviceID>\r\n" +
+                "<Name>Camera 01</Name>\r\n" +
+                "<Manufacturer>Hikvision</Manufacturer>\r\n" +
+                "<Model>IP Camera</Model>\r\n" +
+                "<Owner>Owner</Owner>\r\n" +
+                "<CivilCode>CivilCode</CivilCode>\r\n" +
+                "<Address>Address</Address>\r\n" +
+                "<Parental>0</Parental>\r\n" +
+                "<ParentID>" + bean.getLocalUsername() + "</ParentID>\r\n" +
+                "<SafetyWay>0</SafetyWay>\r\n" +
+                "<RegisterWay>1</RegisterWay>\r\n" +
+                "<Secrecy>0</Secrecy>\r\n" +
+                "<Status>ON</Status>\r\n" +
+                "</Item>\r\n" +
+                "</DeviceList>\r\n" +
+                "</Response>";
+        Request request = createRequestWithBody(sdpData);
+        return sendRequest(request);
+    }
+
+    public Response createDeviceControlResponseResquest(String sn) throws ParseException, SipException, InvalidArgumentException {
+        String sdpData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+                "<Response>\r\n" +
+                "<CmdType>DeviceControl</CmdType>\r\n" +
+                "<SN>" + sn + "</SN>\r\n" +
+                "<DeviceID>34020000001320000004</DeviceID>\r\n" +
+                "<Result>OK</Result>\r\n" +
+                "</Response>";
+        Request request = createRequestWithBody(sdpData);
+        return sendRequest(request);
+    }
 }

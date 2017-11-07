@@ -13,5 +13,5 @@ public interface IClient {
 
     Response queryDeviceStatus(String deviceUserName, String deviceIp) throws ParseException, SipException, InvalidArgumentException;
 
-    Response keepAlive() throws ParseException, SipException, InvalidArgumentException;
+    Response keepAlive(String sn) throws ParseException, SipException, InvalidArgumentException;
 }
