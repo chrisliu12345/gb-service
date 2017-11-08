@@ -46,7 +46,7 @@ public class DeviceInfoQueryAtHome {
     }
 
     @Test
-    public void testQueryCameraDirectlyAtHome() throws Exception {
+    public void testQueryHaikangCameraDirectlyAtHome() throws Exception {
         String localUsername = "34020000001120000001";
         String cameraUserName = "34020000001110000001";
         InitParameter initParameter = new InitParameter(localIp, serverIp, localPort, serverPort, localUsername, serverUsername, realm, password);
@@ -62,4 +62,5 @@ public class DeviceInfoQueryAtHome {
             System.exit(-1);
         }
     }
+
 }

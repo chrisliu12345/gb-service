@@ -230,7 +230,8 @@ public class Transport implements SipListener, IClientRequest {
         Address toNameAddress = addressFactory.createAddress(toAddress);
         ToHeader toHeader = headerFactory.createToHeader(toNameAddress, null);
 
-        SipURI requestURI = addressFactory.createSipURI(deviceUserName, deviceIp);
+        SipURI requestURI = addressFactory.createSipURI(deviceUserName, bean.getRealm());
+
         ArrayList viaHeaders = new ArrayList();
         ViaHeader viaHeader = headerFactory.createViaHeader(bean.getLocalIp(),
                 bean.getLocalPort(), "udp", "branch1");
@@ -248,8 +249,8 @@ public class Transport implements SipListener, IClientRequest {
                 Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
                 toHeader, viaHeaders, maxForwards);
 
-        Address contactAddress = addressFactory.createAddress("<sip:" + deviceUserName + "@" + deviceIp + ":5060>");
-        RouteHeader routeHeader = headerFactory.createRouteHeader(contactAddress);
+        Address routeAddress = addressFactory.createAddress("<sip:" + deviceUserName + "@" + deviceIp + ":5060>");
+        RouteHeader routeHeader = headerFactory.createRouteHeader(routeAddress);
         request.addHeader(routeHeader);
         return request;
     }
