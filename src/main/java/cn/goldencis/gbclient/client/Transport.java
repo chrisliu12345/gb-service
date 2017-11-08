@@ -16,9 +16,7 @@ import javax.sip.message.Response;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Queue;
 import java.util.TooManyListenersException;
-import java.util.concurrent.LinkedBlockingDeque;
 
 public class Transport implements SipListener, IClientRequest {
 
@@ -44,7 +42,6 @@ public class Transport implements SipListener, IClientRequest {
     private InitParameter bean;
 
     private ResponseEvent responseEvent;
-
 
 
     /**
@@ -241,7 +238,7 @@ public class Transport implements SipListener, IClientRequest {
 
         CallIdHeader callIdHeader = createCallIdHeader();
 
-        CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(callSeqNumber,
+        CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
                 Request.MESSAGE);
         MaxForwardsHeader maxForwards = headerFactory
                 .createMaxForwardsHeader(70);
@@ -251,11 +248,9 @@ public class Transport implements SipListener, IClientRequest {
                 Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
                 toHeader, viaHeaders, maxForwards);
 
-        ExpiresHeader expiresHeader = headerFactory.createExpiresHeader(3600);
-        request.setExpires(expiresHeader);
         Address contactAddress = addressFactory.createAddress("<sip:" + deviceUserName + "@" + deviceIp + ":5060>");
-        ContactHeader contactHeader = headerFactory.createContactHeader(contactAddress);
-        request.addHeader(contactHeader);
+        RouteHeader routeHeader = headerFactory.createRouteHeader(contactAddress);
+        request.addHeader(routeHeader);
         return request;
     }
 
