@@ -1,6 +1,6 @@
-package cn.goldencis.gbclient;
+package cn.goldencis.gbservice;
 
-import cn.goldencis.gbclient.core.InitParameter;
+import cn.goldencis.gbservice.core.InitParameter;
 
 import javax.sip.message.Response;
 
