@@ -82,5 +82,22 @@ public class DeviceInfoQueryAtHome {
             System.exit(-1);
         }
     }
-
+    @Test
+    public void testQueryYushiCameraDirectlyAtHome() throws Exception {
+        String localUsername = "34020000001120000001";
+        String cameraUserName = "34020000001110000001";
+        String daHuacameraIp = "192.168.3.67";
+        InitParameter initParameter = new InitParameter(localIp, serverIp, localPort, serverPort, localUsername, serverUsername, realm, password);
+        client = new Client(initParameter);
+        Response fr = client.firstRegister();
+        Response sr = client.secondRegister(fr);
+        try {
+            Response cameraInfo = client.queryDeviceInfo(cameraUserName, daHuacameraIp);
+            Thread.sleep(3000);
+        } catch (Throwable e) {
+            System.out.println("Problem initializing the SIP stack.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
 }
