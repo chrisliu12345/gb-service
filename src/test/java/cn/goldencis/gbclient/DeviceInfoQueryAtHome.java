@@ -18,7 +18,7 @@ public class DeviceInfoQueryAtHome {
     String localIp = "192.168.3.92";
     String serverIp = "192.168.3.100";
     String NVRIp = "192.168.3.161";
-    String cameraIp = "192.3.61";
+
 
     int localPort = 5060;
     int serverPort = 5060;
@@ -47,6 +47,7 @@ public class DeviceInfoQueryAtHome {
 
     @Test
     public void testQueryHaikangCameraDirectlyAtHome() throws Exception {
+        String cameraIp = "192.168.3.61";
         String localUsername = "34020000001120000001";
         String cameraUserName = "34020000001110000001";
         InitParameter initParameter = new InitParameter(localIp, serverIp, localPort, serverPort, localUsername, serverUsername, realm, password);
@@ -55,7 +56,7 @@ public class DeviceInfoQueryAtHome {
         Response sr = client.secondRegister(fr);
         try {
             Response cameraInfo = client.queryDeviceInfo(cameraUserName, cameraIp);
-            Thread.sleep(3000);
+            Thread.sleep(6000);
         } catch (Throwable e) {
             System.out.println("Problem initializing the SIP stack.");
             e.printStackTrace();
@@ -98,4 +99,40 @@ public class DeviceInfoQueryAtHome {
             System.exit(-1);
         }
     }
+    @Test
+    public void testQueryHaikangCameraAsServerAtHome() throws Exception {
+        String localUsername = "34020000001120000001";
+        String cameraUserName = "34020000001110000001";
+        String daHuacameraIp = "192.168.3.61";
+        InitParameter initParameter = new InitParameter(localIp, serverIp, localPort, serverPort, localUsername, serverUsername, realm, password);
+        client = new Client(initParameter);
+        Response fr = client.firstRegister();
+        Response sr = client.secondRegister(fr);
+        try {
+            Response cameraInfo = client.queryDeviceInfoAsServer(cameraUserName, daHuacameraIp);
+            Thread.sleep(3000);
+        } catch (Throwable e) {
+            System.out.println("Problem initializing the SIP stack.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+    @Test
+    public void testQueryNVRDirectlyAsServerAtHome() {
+        try {
+            String localUsername = "34020000001110000001";
+            String NVRUsername = "34020000001120000001";
+            InitParameter initParameter = new InitParameter(localIp, serverIp, localPort, serverPort, localUsername, serverUsername, realm, password);
+            client = new Client(initParameter);
+            Response fr = client.firstRegister();
+            Response sr = client.secondRegister(fr);
+            Response NVRInfo = client.queryDeviceInfoAsServer(NVRUsername, NVRIp);
+            Thread.currentThread().join(10000);
+        } catch (Throwable e) {
+            System.out.println("Problem initializing the SIP stack.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
 }

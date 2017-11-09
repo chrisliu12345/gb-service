@@ -44,6 +44,17 @@ public class Client implements IClient {
     }
 
     @Override
+    public Response queryDeviceInfoAsServer(String deviceUserName, String deviceIp) throws ParseException, SipException, InvalidArgumentException {
+        String sdpData = "<?xml version=\"1.0\"?>\r\n" +
+                "<Query>\r\n" +
+                "<CmdType>DeviceInfo</CmdType>\r\n" +
+                "<SN>17430</SN>\r\n" +
+                "<DeviceID>" + deviceUserName + "</DeviceID>\r\n" +
+                "</Query>";
+        Request request = transport.createQueryRequestAsServer(deviceUserName, deviceIp, sdpData);
+        return transport.sendRequest(request);
+    }
+    @Override
     public Response queryDeviceList(String deviceUserName, String deviceIp) throws ParseException, SipException, InvalidArgumentException {
         String sdpData = "<?xml version=\"1.0\"?>\r\n" +
                 "<Query>\r\n" +

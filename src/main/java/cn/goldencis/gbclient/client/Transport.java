@@ -220,6 +220,14 @@ public class Transport implements SipListener, IClientRequest {
         return request;
     }
 
+    public Request createQueryRequestAsServer(String deviceUserName, String deviceIp, String queryContent) throws ParseException, InvalidArgumentException, SipException {
+        Request request = createQueryRequestHeaderAsServer(deviceUserName, deviceIp);
+        byte[] contents = queryContent.getBytes();
+        ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("Application", "MANSCDP+xml");
+        request.setContent(contents, contentTypeHeader);
+        return request;
+    }
+
     private Request createQueryRequestHeader(String deviceUserName, String deviceIp) throws ParseException, InvalidArgumentException {
 
         Address fromNameAddress = addressFactory.createAddress("sip:" + bean.getLocalUsername() + "@" + bean.getRealm());
@@ -254,7 +262,40 @@ public class Transport implements SipListener, IClientRequest {
         request.addHeader(routeHeader);
         return request;
     }
+    private Request createQueryRequestHeaderAsServer(String deviceUserName, String deviceIp) throws ParseException, InvalidArgumentException {
 
+        Address fromNameAddress = addressFactory.createAddress("sip:" + bean.getServerUsername() + "@" + bean.getRealm());
+        FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
+                bean.getRealm());
+
+        SipURI toAddress = addressFactory.createSipURI(deviceUserName, bean.getRealm());
+        Address toNameAddress = addressFactory.createAddress(toAddress);
+        ToHeader toHeader = headerFactory.createToHeader(toNameAddress, null);
+
+        SipURI requestURI = addressFactory.createSipURI(deviceUserName, bean.getRealm());
+
+        ArrayList viaHeaders = new ArrayList();
+        ViaHeader viaHeader = headerFactory.createViaHeader(bean.getServerIp(),
+                bean.getLocalPort(), "udp", "branch1");
+        viaHeaders.add(viaHeader);
+
+        CallIdHeader callIdHeader = createCallIdHeader();
+
+        CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+                Request.MESSAGE);
+        MaxForwardsHeader maxForwards = headerFactory
+                .createMaxForwardsHeader(70);
+
+
+        Request request = messageFactory.createRequest(requestURI,
+                Request.MESSAGE, callIdHeader, cSeqHeader, fromHeader,
+                toHeader, viaHeaders, maxForwards);
+
+        Address routeAddress = addressFactory.createAddress("<sip:" + deviceUserName + "@" + deviceIp + ":5060>");
+        RouteHeader routeHeader = headerFactory.createRouteHeader(routeAddress);
+        request.addHeader(routeHeader);
+        return request;
+    }
     public Request createFirstRegisterHeader() throws ParseException, InvalidArgumentException {
         Address fromNameAddress = addressFactory.createAddress("sip:" + bean.getLocalUsername() + "@" + bean.getRealm());
         FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
