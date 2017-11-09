@@ -1,4 +1,4 @@
-package cn.goldencis.gbservice.core;
+package cn.goldencis.gbclient.core;
 
 public abstract interface Protocol {
     public static final String DEFAULT_SERVLET_URI = "com.git.wuqf.pushlet.srv";

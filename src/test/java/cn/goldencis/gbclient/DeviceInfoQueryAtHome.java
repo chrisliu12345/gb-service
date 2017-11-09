@@ -1,10 +1,16 @@
-package cn.goldencis.gbservice;
+package cn.goldencis.gbclient;
 
 
-import cn.goldencis.gbservice.core.InitParameter;
+import cn.goldencis.gbclient.core.InitParameter;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.sip.InvalidArgumentException;
+import javax.sip.SipException;
 import javax.sip.message.Response;
+import java.text.ParseException;
+import java.util.TooManyListenersException;
 
 
 public class DeviceInfoQueryAtHome {
@@ -12,9 +18,7 @@ public class DeviceInfoQueryAtHome {
     String localIp = "192.168.3.92";
     String serverIp = "192.168.3.100";
     String NVRIp = "192.168.3.161";
-    String cameraIp = "192." +
-            "" +
-            ".3.248";
+    String cameraIp = "192.3.61";
 
     int localPort = 5060;
     int serverPort = 5060;

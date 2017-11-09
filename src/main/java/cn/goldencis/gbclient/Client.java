@@ -1,7 +1,7 @@
-package cn.goldencis.gbservice;
+package cn.goldencis.gbclient;
 
-import cn.goldencis.gbservice.client.Transport;
-import cn.goldencis.gbservice.core.InitParameter;
+import cn.goldencis.gbclient.client.Transport;
+import cn.goldencis.gbclient.core.InitParameter;
 
 import javax.sip.InvalidArgumentException;
 import javax.sip.SipException;

@@ -1,4 +1,4 @@
-package cn.goldencis.gbservice.client;
+package cn.goldencis.gbclient.client;
 
 import javax.sip.SipException;
 import javax.sip.message.Request;

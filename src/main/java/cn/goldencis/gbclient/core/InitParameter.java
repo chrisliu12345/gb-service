@@ -1,4 +1,4 @@
-package cn.goldencis.gbservice.core;
+package cn.goldencis.gbclient.core;
 
 public class InitParameter {
 

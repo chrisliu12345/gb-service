@@ -1,4 +1,4 @@
-package cn.goldencis.gbservice.serturity;
+package cn.goldencis.gbclient.serturity;
 
 
 import java.security.MessageDigest;

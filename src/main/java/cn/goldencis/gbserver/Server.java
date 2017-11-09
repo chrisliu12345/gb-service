@@ -1,6 +1,6 @@
 package cn.goldencis.gbserver;
 
-import cn.goldencis.gbservice.serturity.DigestClientAuthenticationMethod;
+import cn.goldencis.gbclient.serturity.DigestClientAuthenticationMethod;
 import gov.nist.javax.sip.stack.MessageProcessor;
 import org.xml.sax.SAXException;
 

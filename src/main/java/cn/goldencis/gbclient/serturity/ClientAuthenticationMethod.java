@@ -4,7 +4,7 @@
  * Created on January 8, 2003, 9:49 AM
  */
 
-package cn.goldencis.gbservice.serturity;
+package cn.goldencis.gbclient.serturity;
 
 /**
  * Get this interface from the nist-sip IM

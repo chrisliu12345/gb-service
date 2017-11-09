@@ -1,7 +1,7 @@
-package cn.goldencis.gbservice.client;
+package cn.goldencis.gbclient.client;
 
-import cn.goldencis.gbservice.core.InitParameter;
-import cn.goldencis.gbservice.serturity.DigestClientAuthenticationMethod;
+import cn.goldencis.gbclient.core.InitParameter;
+import cn.goldencis.gbclient.serturity.DigestClientAuthenticationMethod;
 import gov.nist.javax.sip.header.SIPHeaderNames;
 
 import javax.sip.*;
